@@ -1,13 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  addMessage,
-  buildMessage,
-  createSession,
-  listSessions,
-  ChatSession
-} from "../lib/chatStore";
 
 type Participant = {
   id: string;
@@ -20,6 +13,35 @@ type ChatSessionPanelProps = {
   sessionKey: string;
 };
 
+type ChatMessage = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  speaker?: string;
+  createdAt: string;
+};
+
+type ChatSession = {
+  id: string;
+  title: string;
+  participantIds: string[];
+  messages: ChatMessage[];
+};
+
+const getVisitorId = () => {
+  if (typeof window === "undefined") {
+    return "";
+  }
+  const key = "tavern-visitor-id";
+  const existing = window.localStorage.getItem(key);
+  if (existing) {
+    return existing;
+  }
+  const generated = Math.random().toString(36).slice(2, 10);
+  window.localStorage.setItem(key, generated);
+  return generated;
+};
+
 export default function ChatSessionPanel({
   title,
   participants,
@@ -27,21 +49,34 @@ export default function ChatSessionPanel({
 }: ChatSessionPanelProps) {
   const [session, setSession] = useState<ChatSession | null>(null);
   const [input, setInput] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
-    const sessions = listSessions();
-    const existing = sessions.find((item) => item.id === sessionKey);
-    if (existing) {
-      setSession(existing);
-      return;
-    }
-    const fallbackTitle = title || "New conversation";
-    const created = createSession(
-      fallbackTitle,
-      participants.map((participant) => participant.id),
-      sessionKey
-    );
-    setSession(created);
+    const loadSession = async () => {
+      const visitorId = getVisitorId();
+      const response = await fetch(`/api/sessions/${sessionKey}?visitorId=${visitorId}`);
+      if (response.ok) {
+        const data = (await response.json()) as ChatSession;
+        setSession(data);
+        return;
+      }
+      const fallbackTitle = title || "New conversation";
+      const createResponse = await fetch("/api/sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: sessionKey,
+          title: fallbackTitle,
+          participantIds: participants.map((participant) => participant.id),
+          visitorId
+        })
+      });
+      if (createResponse.ok) {
+        const created = (await createResponse.json()) as ChatSession;
+        setSession(created);
+      }
+    };
+    void loadSession();
   }, [participants, sessionKey, title]);
 
   const messages = session?.messages ?? [];
@@ -53,29 +88,45 @@ export default function ChatSessionPanel({
     return `The circle is listening. ${participants.length} companions are ready to respond.`;
   }, [participants]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!session || !input.trim()) {
       return;
     }
-    const userMessage = buildMessage("user", input.trim(), "You");
-    const nextSession = addMessage(session, userMessage);
-    const responder = participants[Math.floor(Math.random() * participants.length)];
-    const assistantMessage = buildMessage(
-      "assistant",
-      `(${responder.name}) I hear you. Let us weave the next thread together.`,
-      responder.name
-    );
-    const finalSession = addMessage(nextSession, assistantMessage);
-    setSession(finalSession);
-    setInput("");
+    setIsSending(true);
+    const visitorId = getVisitorId();
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sessionId: session.id,
+        visitorId,
+        content: input.trim(),
+        participants
+      })
+    });
+    if (response.ok) {
+      const data = (await response.json()) as ChatSession;
+      setSession(data);
+      setInput("");
+    }
+    setIsSending(false);
   };
 
-  const startNewChat = () => {
-    const newSession = createSession(
-      `${title} · ${new Date().toLocaleTimeString()}`,
-      participants.map((participant) => participant.id)
-    );
-    setSession(newSession);
+  const startNewChat = async () => {
+    const visitorId = getVisitorId();
+    const response = await fetch("/api/sessions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: `${title} · ${new Date().toLocaleTimeString()}`,
+        participantIds: participants.map((participant) => participant.id),
+        visitorId
+      })
+    });
+    if (response.ok) {
+      const data = (await response.json()) as ChatSession;
+      setSession(data);
+    }
   };
 
   return (
@@ -111,9 +162,10 @@ export default function ChatSessionPanel({
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Send a message..."
+          disabled={isSending}
         />
-        <button className="cta" type="button" onClick={sendMessage}>
-          Send
+        <button className="cta" type="button" onClick={sendMessage} disabled={isSending}>
+          {isSending ? "Sending..." : "Send"}
         </button>
       </div>
     </div>
