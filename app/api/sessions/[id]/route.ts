@@ -1,0 +1,19 @@
+import { NextResponse } from "next/server";
+import { prisma } from "../../../lib/prisma";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+export async function GET(
+  _request: Request,
+  { params }: { params: { id: string } }
+) {
+  const session = await prisma.chatSession.findUnique({
+    where: { id: params.id },
+    include: { messages: { orderBy: { createdAt: "asc" } } }
+  });
+  if (!session) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+  return NextResponse.json(session);
+}
