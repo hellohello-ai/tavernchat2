@@ -48,6 +48,7 @@ export default function ChatPage() {
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
           <span className="badge">Dynamic speaker selection</span>
           <span className="badge">3 companions in this circle</span>
+          <span className="badge accent">Session saved automatically</span>
         </div>
         <div className="chat-shell">
           <aside className="panel chat-history">
@@ -60,6 +61,27 @@ export default function ChatPage() {
               <div key={title} className="card">
                 <strong>{title}</strong>
                 <span style={{ color: "var(--muted)" }}>Updated just now</span>
+              </div>
+            ))}
+            <div className="divider" />
+            <strong>Active party</strong>
+            {sampleParticipants.map((participant) => (
+              <div key={participant.name} className="card">
+                <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+                  <div className="avatar" aria-hidden="true">
+                    {participant.name
+                      .split(" ")
+                      .map((word) => word[0])
+                      .slice(0, 2)
+                      .join("")}
+                  </div>
+                  <div>
+                    <strong>{participant.name}</strong>
+                    <div style={{ color: "var(--muted)", fontSize: "0.85rem" }}>
+                      {participant.role}
+                    </div>
+                  </div>
+                </div>
               </div>
             ))}
           </aside>

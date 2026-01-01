@@ -47,6 +47,7 @@ body {
   margin: 0;
   min-height: 100vh;
   background: radial-gradient(circle at top, rgba(242, 178, 91, 0.12), transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05), transparent 40%),
     linear-gradient(180deg, var(--bg), var(--bg-muted));
   color: var(--text);
 }
@@ -131,6 +132,13 @@ select {
   box-shadow: none;
 }
 
+.cta.ghost {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
 .grid {
   display: grid;
   gap: 1.5rem;
@@ -159,6 +167,11 @@ select {
   background: rgba(255, 255, 255, 0.08);
   font-size: 0.75rem;
   letter-spacing: 0.02em;
+}
+
+.badge.accent {
+  background: rgba(242, 178, 91, 0.18);
+  border: 1px solid rgba(242, 178, 91, 0.35);
 }
 
 .avatar {
@@ -195,6 +208,41 @@ select {
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 1.5rem;
+}
+
+.notice-board {
+  display: grid;
+  gap: 1rem;
+}
+
+.notice-board .card {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.notice-board-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.divider {
+  border-top: 1px dashed var(--border);
+  margin: 1rem 0;
+}
+
+.glow-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.glow-card::after {
+  content: "";
+  position: absolute;
+  inset: -40% 40% 40% -40%;
+  background: radial-gradient(circle, rgba(242, 178, 91, 0.25), transparent 60%);
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .chat-history {
@@ -237,6 +285,26 @@ select {
     radial-gradient(circle at 50% 80%, rgba(255, 255, 255, 0.04), transparent 45%);
   mix-blend-mode: screen;
   opacity: 0.35;
+}
+
+.lanterns {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle at 15% 30%, rgba(242, 178, 91, 0.12), transparent 40%),
+    radial-gradient(circle at 85% 70%, rgba(242, 178, 91, 0.1), transparent 45%);
+  opacity: 0.45;
+  animation: flicker 6s ease-in-out infinite;
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 @media (max-width: 900px) {

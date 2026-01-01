@@ -15,6 +15,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <div className="ambient" aria-hidden="true" />
+        <div className="lanterns" aria-hidden="true" />
         {children}
       </body>
     </html>

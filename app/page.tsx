@@ -1,5 +1,8 @@
 import Link from "next/link";
 import ThemeSwitcher from "./components/ThemeSwitcher";
+import NoticeBoard from "./components/NoticeBoard";
+import QuestHook from "./components/QuestHook";
+import AmbiencePanel from "./components/AmbiencePanel";
 
 export default function HomePage() {
   return (
@@ -73,6 +76,14 @@ export default function HomePage() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="container" style={{ display: "grid", gap: "1.5rem" }}>
+        <div className="grid">
+          <QuestHook />
+          <AmbiencePanel />
+        </div>
+        <NoticeBoard />
       </section>
     </main>
   );
