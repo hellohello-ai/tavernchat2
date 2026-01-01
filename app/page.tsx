@@ -13,7 +13,9 @@ export default function HomePage() {
         </div>
         <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
           <ThemeSwitcher />
-          <button className="cta secondary">Sign in</button>
+          <Link className="cta secondary" href="/account">
+            Account
+          </Link>
         </div>
       </header>
 

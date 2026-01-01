@@ -66,7 +66,9 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
         </div>
         <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
           <ThemeSwitcher />
-          <button className="cta secondary">Account</button>
+          <Link className="cta secondary" href="/account">
+            Account
+          </Link>
         </div>
       </header>
 

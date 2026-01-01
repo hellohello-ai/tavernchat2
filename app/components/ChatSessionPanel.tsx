@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { getVisitorId } from "../lib/visitor";
 
 type Participant = {
   id: string;
@@ -26,20 +27,6 @@ type ChatSession = {
   title: string;
   participantIds: string[];
   messages: ChatMessage[];
-};
-
-const getVisitorId = () => {
-  if (typeof window === "undefined") {
-    return "";
-  }
-  const key = "tavern-visitor-id";
-  const existing = window.localStorage.getItem(key);
-  if (existing) {
-    return existing;
-  }
-  const generated = Math.random().toString(36).slice(2, 10);
-  window.localStorage.setItem(key, generated);
-  return generated;
 };
 
 export default function ChatSessionPanel({
