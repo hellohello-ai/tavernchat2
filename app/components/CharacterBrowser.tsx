@@ -62,11 +62,14 @@ export default function CharacterBrowser() {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
-        <button className="cta secondary">
+        <Link
+          className="cta secondary"
+          href={`/chat?group=${selected.join(",")}`}
+        >
           {selectedCount > 0
             ? `Start group chat (${selectedCount})`
             : "Start group chat"}
-        </button>
+        </Link>
       </div>
 
       <div className="tag-row">

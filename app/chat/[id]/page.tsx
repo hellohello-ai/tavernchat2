@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ThemeSwitcher from "../../components/ThemeSwitcher";
 import { characters } from "../../lib/characters";
+import ChatSessionPanel from "../../components/ChatSessionPanel";
 
 type PageProps = {
   params: { id: string };
@@ -70,16 +71,11 @@ export default function CharacterChatPage({ params }: PageProps) {
             </div>
           </div>
         </div>
-        <div className="panel" style={{ display: "grid", gap: "1rem" }}>
-          <div className="message">
-            <div className="meta">{character.name}</div>
-            Welcome back, traveler. The hearth has been waiting for your voice.
-          </div>
-          <div className="bottom-input">
-            <input className="input" placeholder={`Speak with ${character.name}...`} />
-            <button className="cta">Send</button>
-          </div>
-        </div>
+        <ChatSessionPanel
+          title={`Chat with ${character.name}`}
+          participants={[{ id: character.id, name: character.name }]}
+          sessionKey={`direct-${character.id}`}
+        />
       </section>
     </main>
   );

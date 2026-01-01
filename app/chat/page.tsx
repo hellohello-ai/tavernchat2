@@ -1,10 +1,12 @@
 import Link from "next/link";
 import ThemeSwitcher from "../components/ThemeSwitcher";
+import ChatSessionPanel from "../components/ChatSessionPanel";
+import { characters } from "../lib/characters";
 
 const sampleParticipants = [
-  { name: "Bard of Ember 7", role: "Bard" },
-  { name: "Seer of Ember 21", role: "Seer" },
-  { name: "Runeweaver of Ember 42", role: "Runeweaver" }
+  { id: "character-7", name: "Bard of Ember 7", role: "Bard" },
+  { id: "character-21", name: "Seer of Ember 21", role: "Seer" },
+  { id: "character-42", name: "Runeweaver of Ember 42", role: "Runeweaver" }
 ];
 
 const sampleMessages = [
@@ -26,7 +28,31 @@ const sampleMessages = [
   }
 ];
 
-export default function ChatPage() {
+type ChatPageProps = {
+  searchParams?: { group?: string };
+};
+
+export default function ChatPage({ searchParams }: ChatPageProps) {
+  const groupIds = searchParams?.group
+    ? searchParams.group.split(",").filter(Boolean)
+    : [];
+  const groupParticipants =
+    groupIds.length > 0
+      ? characters.filter((character) => groupIds.includes(character.id)).slice(0, 5)
+      : [];
+  const participants =
+    groupParticipants.length > 0
+      ? groupParticipants.map((participant) => ({
+          id: participant.id,
+          name: participant.name,
+          role: participant.role
+        }))
+      : sampleParticipants;
+  const sessionKey =
+    groupParticipants.length > 0
+      ? `group-${groupParticipants.map((participant) => participant.id).join("-")}`
+      : "group-hearth-council";
+
   return (
     <main>
       <header className="container">
@@ -47,7 +73,7 @@ export default function ChatPage() {
       <section className="container panel" style={{ display: "grid", gap: "1.5rem" }}>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
           <span className="badge">Dynamic speaker selection</span>
-          <span className="badge">3 companions in this circle</span>
+          <span className="badge">{participants.length} companions in this circle</span>
           <span className="badge accent">Session saved automatically</span>
         </div>
         <div className="chat-shell">
@@ -88,7 +114,7 @@ export default function ChatPage() {
 
           <div className="panel" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-              {sampleParticipants.map((participant) => (
+              {participants.map((participant) => (
                 <div key={participant.name} className="card" style={{ minWidth: "160px" }}>
                   <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
                     <div className="avatar" aria-hidden="true">
@@ -108,25 +134,23 @@ export default function ChatPage() {
                 </div>
               ))}
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {sampleMessages.map((message) => (
-                <div
-                  key={`${message.speaker}-${message.content}`}
-                  className={`message ${message.speaker === "You" ? "user" : ""}`}
-                >
-                  <div className="meta">
-                    {message.speaker} · {message.role}
-                  </div>
-                  {message.content}
-                </div>
+            <ChatSessionPanel
+              title="The Hearth Council"
+              participants={participants.map((participant) => ({
+                id: participant.id,
+                name: participant.name
+              }))}
+              sessionKey={sessionKey}
+            />
+            <div className="divider" />
+            <div className="notice-board">
+              <strong>Suggested companions</strong>
+              {characters.slice(0, 3).map((companion) => (
+                <Link key={companion.id} href={`/chat/${companion.id}`} className="card">
+                  <strong>{companion.name}</strong>
+                  <span style={{ color: "var(--muted)" }}>{companion.summary}</span>
+                </Link>
               ))}
-            </div>
-            <div className="bottom-input">
-              <input
-                className="input"
-                placeholder="Share your next thought..."
-              />
-              <button className="cta">Send</button>
             </div>
           </div>
         </div>
