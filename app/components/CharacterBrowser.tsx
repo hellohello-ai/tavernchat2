@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { characters } from "../lib/characters";
 
@@ -130,16 +131,24 @@ export default function CharacterBrowser() {
                     <div key={character.id} className="card">
                       <div style={{ display: "flex", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-                          <div className="avatar" aria-hidden="true">
-                            {character.name
-                              .split(" ")
-                              .map((word) => word[0])
-                              .slice(0, 2)
-                              .join("")}
-                          </div>
+                          <Link
+                            href={`/chat/${character.id}`}
+                            style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}
+                          >
+                            <div className="avatar" aria-hidden="true">
+                              {character.name
+                                .split(" ")
+                                .map((word) => word[0])
+                                .slice(0, 2)
+                                .join("")}
+                            </div>
+                            <div>
+                              <h3 style={{ margin: 0 }}>{character.name}</h3>
+                              <span className="badge">{character.role}</span>
+                            </div>
+                          </Link>
                           <div>
-                            <h3 style={{ margin: 0 }}>{character.name}</h3>
-                            <span className="badge">{character.role}</span>
+                            <span className="badge accent">Click to chat</span>
                           </div>
                         </div>
                         <input
