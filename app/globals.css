@@ -154,6 +154,7 @@ select {
   flex-direction: column;
   gap: 0.75rem;
   min-height: 220px;
+  position: relative;
 }
 
 .card h3 {

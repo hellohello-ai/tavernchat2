@@ -129,24 +129,29 @@ export default function CharacterBrowser() {
                 ) : (
                   items.map((character) => (
                     <div key={character.id} className="card">
+                      <Link
+                        href={`/chat/${character.id}`}
+                        aria-label={`Open chat with ${character.name}`}
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          borderRadius: "16px",
+                          zIndex: 0
+                        }}
+                      />
                       <div style={{ display: "flex", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-                          <Link
-                            href={`/chat/${character.id}`}
-                            style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}
-                          >
-                            <div className="avatar" aria-hidden="true">
-                              {character.name
-                                .split(" ")
-                                .map((word) => word[0])
-                                .slice(0, 2)
-                                .join("")}
-                            </div>
-                            <div>
-                              <h3 style={{ margin: 0 }}>{character.name}</h3>
-                              <span className="badge">{character.role}</span>
-                            </div>
-                          </Link>
+                          <div className="avatar" aria-hidden="true">
+                            {character.name
+                              .split(" ")
+                              .map((word) => word[0])
+                              .slice(0, 2)
+                              .join("")}
+                          </div>
+                          <div>
+                            <h3 style={{ margin: 0 }}>{character.name}</h3>
+                            <span className="badge">{character.role}</span>
+                          </div>
                           <div>
                             <span className="badge accent">Click to chat</span>
                           </div>
@@ -156,6 +161,8 @@ export default function CharacterBrowser() {
                           checked={selected.includes(character.id)}
                           onChange={() => toggleSelected(character.id)}
                           aria-label={`Select ${character.name} for group chat`}
+                          onClick={(event) => event.stopPropagation()}
+                          style={{ position: "relative", zIndex: 1 }}
                         />
                       </div>
                       <p style={{ color: "var(--muted)" }}>{character.summary}</p>
@@ -165,6 +172,18 @@ export default function CharacterBrowser() {
                             {tag}
                           </span>
                         ))}
+                      </div>
+                      <div style={{ display: "flex", gap: "0.75rem" }}>
+                        <Link
+                          className="cta secondary"
+                          href={`/chat/${character.id}`}
+                          style={{ position: "relative", zIndex: 1 }}
+                        >
+                          Chat now
+                        </Link>
+                        <button className="cta ghost" type="button" style={{ position: "relative", zIndex: 1 }}>
+                          Preview
+                        </button>
                       </div>
                     </div>
                   ))
